@@ -22,10 +22,10 @@ var crisper = require('gulp-crisper');
 gulp.task('default', function () {
 	return gulp.src('src/index.html')
 		.pipe(vulcanize({
-			abspath: '',
-		  excludes: [],
-		  stripExcludes: false,
-		  inlineScripts: false
+      abspath: '',
+      excludes: [],
+      stripExcludes: false,
+      inlineScripts: false
 		}))
 		.pipe(crisper());
 		.pipe(gulp.dest('dest'));
