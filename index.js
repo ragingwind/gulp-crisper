@@ -14,8 +14,7 @@ function File(file, filename, contents) {
 }
 
 function getFilename(filepath) {
-	var ext = path.extname(filepath);
-	var basename = path.basename(filepath, ext);
+	var basename = path.basename(filepath, path.extname(filepath));
 	return {
 		html: basename + '.html',
 		js: basename + '.js'
