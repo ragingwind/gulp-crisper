@@ -33,15 +33,15 @@ module.exports = function () {
 			return;
 		}
 
-		var filename = getFilename(file.path)
-		var split = crisper.split(file.contents.toString(), filename.js);
+		var splitfile = getFilename(file.path)
+		var split = crisper.split(file.contents.toString(), splitfile.js);
 
 		if (split.html) {
-			this.push(new File(file, filename.html, split.html));
+			this.push(new File(file, splitfile.html, split.html));
 		}
 
 		if (split.js) {
-			this.push(new File(file, filename.js, split.js));
+			this.push(new File(file, splitfile.js, split.js));
 		}
 
 		cb();
