@@ -4,7 +4,7 @@ var gutil = require('gulp-util');
 var through = require('through2');
 var crisper = require('crisper');
 
-function File(file, filename, contents) {
+function splitFile(file, filename, contents) {
 	return new gutil.File({
 		cwd: file.cwd,
 		base: file.base,
@@ -35,14 +35,13 @@ module.exports = function () {
 
 		var splitfile = getFilename(file.path)
 		var split = crisper.split(file.contents.toString(), splitfile.js);
+    var stream = this;
 
-		if (split.html) {
-			this.push(new File(file, splitfile.html, split.html));
-		}
-
-		if (split.js) {
-			this.push(new File(file, splitfile.js, split.js));
-		}
+    Object.keys(split).forEach(function(type) {
+      if (split[type]) {
+        stream.push(splitFile(file, splitfile[type], split[type]));
+      }
+    });
 
 		cb();
 	});
