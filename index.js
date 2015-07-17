@@ -13,11 +13,16 @@ function splitFile(file, filename, contents) {
   });
 }
 
-function getFilename(filepath) {
-  var basename = path.basename(filepath, path.extname(filepath));
-  return {
-    html: basename + '.html',
-    js: basename + '.js'
+function getFilename(file) {
+  var htmlPath = path.relative(file.base, file.path);
+  var jsPath = gutil.replaceExtension(htmlPath, '.js');
+  var jsFilename = path.basename(jsPath);
+  return { 
+    html: htmlPath, 
+    js: { 
+      path: jsPath, 
+      filename: jsFilename
+    }
   };
 }
 
@@ -33,15 +38,17 @@ module.exports = function () {
     	return;
     }
 
-    var splitfile = getFilename(file.path)
-    var split = crisper.split(file.contents.toString(), splitfile.js);
+    var splitfile = getFilename(file);
+    var htmlContent = file.contents.toString();
+    var split = crisper.split(htmlContent, splitfile.js.filename);
     var stream = this;
 
-    Object.keys(split).forEach(function(type) {
-      if (split[type]) {
-        stream.push(splitFile(file, splitfile[type], split[type]));
-      }
-    });
+    if (split.js.length < 1) {
+        stream.push(splitFile(file, splitfile.html, htmlContent));
+    } else {
+        stream.push(splitFile(file, splitfile.html, split.html));
+        stream.push(splitFile(file, splitfile.js.path, split.js));
+    }
 
     cb();
   });
