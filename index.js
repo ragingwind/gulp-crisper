@@ -8,7 +8,7 @@ function splitFile(file, filename, contents) {
   return new gutil.File({
     cwd: file.cwd,
     base: file.base,
-    path: path.join(file.base, filename),
+    path: path.join(path.dirname(file.path), filename),
     contents: new Buffer(contents)
   });
 }
@@ -24,16 +24,16 @@ function getFilename(filepath) {
 module.exports = function () {
   return through.obj(function (file, enc, cb) {
     if (file.isNull()) {
-    	cb(null, file);
-    	return;
+      cb(null, file);
+      return;
     }
 
     if (file.isStream()) {
-    	cb(new gutil.PluginError('gulp-crisper', 'Streaming not supported'));
-    	return;
+      cb(new gutil.PluginError('gulp-crisper', 'Streaming not supported'));
+      return;
     }
 
-    var splitfile = getFilename(file.path)
+    var splitfile = getFilename(file.path);
     var split = crisper.split(file.contents.toString(), splitfile.js);
     var stream = this;
 
