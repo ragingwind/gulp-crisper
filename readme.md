@@ -29,8 +29,8 @@ gulp.task('default', function () {
 		}))
 		.pipe(crisper({
 			scriptInHead: true,
-  		onlySplit: false
-		}));
+			onlySplit: false
+		}))
 		.pipe(gulp.dest('dest'));
 });
 ```
