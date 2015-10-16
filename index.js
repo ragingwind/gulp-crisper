@@ -3,6 +3,7 @@ var path = require('path');
 var gutil = require('gulp-util');
 var through = require('through2');
 var crisper = require('crisper');
+var oassign = require('object-assign');
 
 function splitFile(file, filename, contents) {
   return new gutil.File({
@@ -21,7 +22,7 @@ function getFilename(filepath) {
   };
 }
 
-module.exports = function () {
+module.exports = function (opts) {
   return through.obj(function (file, enc, cb) {
     if (file.isNull()) {
       cb(null, file);
@@ -34,7 +35,10 @@ module.exports = function () {
     }
 
     var splitfile = getFilename(file.path);
-    var split = crisper.split(file.contents.toString(), splitfile.js);
+    var split = crisper(oassign({
+      source: file.contents.toString(),
+      jsFileName: splitfile.js
+    }, opts));
     var stream = this;
 
     Object.keys(split).forEach(function(type) {

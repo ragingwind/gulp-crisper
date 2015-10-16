@@ -13,7 +13,7 @@ function copyTestFile(src, dest) {
 }
 
 describe('should do for csp', function () {
-	before(function (cb) {
+	beforeEach(function (cb) {
 		rimraf.sync('tmp');
 		mkdirp.sync('tmp/dist');
 
@@ -42,7 +42,6 @@ describe('should do for csp', function () {
 		var stream = crisper();
 
 		stream.on('data', function (file) {
-			var ext = path.extname(file.path);
 			var contents = file.contents.toString();
 			var rex = {
 				js: /Polymer\({/,
@@ -55,6 +54,56 @@ describe('should do for csp', function () {
 				assert(rex.js.test(contents));
 			} else {
 				assert(null);
+			}
+		});
+
+		stream.on('end', cb);
+
+		stream.write(new gutil.File({
+			cwd: __dirname,
+			base: path.join(__dirname, 'tmp'),
+			path: path.join('tmp', 'vulcanize.html'),
+			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+		}));
+
+		stream.end();
+	});
+
+	it('options test: scriptInHead', function (cb) {
+		var stream = crisper({
+			scriptInHead: Boolean
+		});
+
+		stream.on('data', function (file) {
+			var contents = file.contents.toString();
+
+			if (/\.html$/.test(file.path)) {
+				assert(/defer=/g.test(contents));
+			}
+		});
+
+		stream.on('end', cb);
+
+		stream.write(new gutil.File({
+			cwd: __dirname,
+			base: path.join(__dirname, 'tmp'),
+			path: path.join('tmp', 'vulcanize.html'),
+			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+		}));
+
+		stream.end();
+	});
+
+	it('options test: onlySplit', function (cb) {
+		var stream = crisper({
+			onlySplit: Boolean
+		});
+
+		stream.on('data', function (file) {
+			var contents = file.contents.toString();
+
+			if (/\.html$/.test(file.path)) {
+				assert(!/<script/.test(contents));
 			}
 		});
 

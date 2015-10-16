@@ -27,10 +27,17 @@ gulp.task('default', function () {
 			stripExcludes: false,
 			inlineScripts: false
 		}))
-		.pipe(crisper());
+		.pipe(crisper({
+			scriptInHead: true,
+  		onlySplit: false
+		}));
 		.pipe(gulp.dest('dest'));
 });
 ```
+
+### Options
+
+You can use options of crisper. see [doc](https://github.com/PolymerLabs/crisper#usage) for further information.
 
 ## License
 
