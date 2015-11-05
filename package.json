@@ -1,6 +1,6 @@
 {
   "name": "gulp-crisper",
-  "version": "0.0.7",
+  "version": "1.0.0",
   "description": "Gulp plugin for crisper that split inline scripts from an HTML file for CSP compliance",
   "license": "MIT",
   "author": {
