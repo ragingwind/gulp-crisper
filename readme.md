@@ -28,7 +28,7 @@ gulp.task('default', function () {
 			inlineScripts: false
 		}))
 		.pipe(crisper({
-			scriptInHead: true,
+			scriptInHead: false, // true is default
 			onlySplit: false
 		}))
 		.pipe(gulp.dest('dest'));
