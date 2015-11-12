@@ -118,4 +118,29 @@ describe('should do for csp', function () {
 
 		stream.end();
 	});
+
+	it('options test: jsFileName', function (cb) {
+		var stream = crisper({
+			jsFileName: 'script/new-script.js'
+		});
+
+		stream.on('data', function (file) {
+			var contents = file.contents.toString();
+
+			if (/\.html$/.test(file.path)) {
+				assert(/script\/new-script.js/.test(contents));
+			}
+		});
+
+		stream.on('end', cb);
+
+		stream.write(new gutil.File({
+			cwd: __dirname,
+			base: path.join(__dirname, 'tmp'),
+			path: path.join('tmp', 'vulcanize.html'),
+			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+		}));
+
+		stream.end();
+	});
 });

@@ -35,10 +35,10 @@ module.exports = function (opts) {
     }
 
     var splitfile = getFilename(file.path);
-    var split = crisper(oassign({}, opts, {
+    var split = crisper(oassign({}, {
       source: file.contents.toString(),
       jsFileName: splitfile.js
-    }));
+    }, opts));
     var stream = this;
 
     Object.keys(split).forEach(function(type) {
