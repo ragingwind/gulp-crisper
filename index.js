@@ -23,6 +23,8 @@ function getFilename(filepath) {
 }
 
 module.exports = function (opts) {
+  opts = opts || {};
+  var jsName = opts.jsFileName;
   return through.obj(function (file, enc, cb) {
     if (file.isNull()) {
       cb(null, file);
@@ -34,7 +36,8 @@ module.exports = function (opts) {
       return;
     }
 
-    var splitfile = getFilename(file.path);
+    var splitfile = jsName ? {html:path.basename(file.path), js: jsName}
+                           : getFilename(file.path);
     var split = crisper(oassign({}, opts, {
       source: file.contents.toString(),
       jsFileName: splitfile.js
