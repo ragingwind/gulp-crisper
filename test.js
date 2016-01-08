@@ -45,7 +45,7 @@ describe('should do for csp', function () {
 			var contents = file.contents.toString();
 			var rex = {
 				js: /Polymer\({/,
-				html: /<script src=\"vulcanize.js\"><\/script><\/body><\/html>/
+				html: /<script src=\"vulcanize.js\".*><\/script>/
 			};
 
 			if (/\.html$/.test(file.path)) {
