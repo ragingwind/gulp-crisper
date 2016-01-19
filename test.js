@@ -55,6 +55,10 @@ describe('should do for csp', function () {
 			} else {
 				assert(null);
 			}
+
+			if (/\.js$/.test(file.path)) {
+				assert(/^tmp\/vulcanize.js$/.test(file.path));
+			}
 		});
 
 		stream.on('end', cb);
@@ -129,6 +133,9 @@ describe('should do for csp', function () {
 
 			if (/\.html$/.test(file.path)) {
 				assert(/script\/new-script.js/.test(contents));
+			}
+			if (/\.js$/.test(file.path)) {
+				assert(/^tmp\/script\/new-script.js$/.test(file.path));
 			}
 		});
 
