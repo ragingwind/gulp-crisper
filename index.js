@@ -43,7 +43,11 @@ module.exports = function (opts) {
 
     Object.keys(split).forEach(function(type) {
       if (split[type]) {
-        stream.push(splitFile(file, splitfile[type], split[type]));
+        if (type === 'js' && opts && opts.jsFileName) {
+          stream.push(splitFile(file, opts.jsFileName, split[type]));  
+        } else {
+          stream.push(splitFile(file, splitfile[type], split[type]));
+        }
       }
     });
 
