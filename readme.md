@@ -35,6 +35,26 @@ gulp.task('default', function () {
 });
 ```
 
+## FAQ
+
+### Using `jsFileName` option
+
+If you would like to use `jsFileName` and need to change the path of js file comes out from `crisper`? You should use `gulp-rename` for it because `jsFileName` option only affect on the path in `script` tag in vulcanized html. Here is one of samples to show how to use `gulp-rename` with it.
+
+```
+return gulp.src('public/elements/elements.vulcanized.html')
+  .pipe(crisper({
+    jsFileName: 'elements.crisper.js'
+  }))
+  .pipe(rename(function(file) {
+      if (file.extname === '.js') {
+        file.basename = ''elements.crisper.js';
+      }
+    }))
+  })
+  .pipe(gulp.dest('dest/elements'))
+```
+
 ### Options
 
 You can use options of crisper. see [doc](https://github.com/PolymerLabs/crisper#usage) for further information.
