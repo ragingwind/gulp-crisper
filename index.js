@@ -42,7 +42,7 @@ module.exports = function (opts) {
     var stream = this;
 
     Object.keys(split).forEach(function(type) {
-      if (split[type]) {
+      if (split[type] || (type === 'js' && opts.alwaysWriteScript)) {
         stream.push(splitFile(file, splitfile[type], split[type]));
       }
     });

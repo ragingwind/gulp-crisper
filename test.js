@@ -143,4 +143,29 @@ describe('should do for csp', function () {
 
 		stream.end();
 	});
+
+	it('options test: alwaysWriteScript', function (cb) {
+		var stream = crisper({
+			alwaysWriteScript: Boolean
+		});
+
+		stream.on('data', function (file) {
+			var contents = file.contents.toString();
+
+			if (/.js$/.test(file.path)) {
+				assert(contents === '');
+			}
+		});
+
+		stream.on('end', cb);
+
+		stream.write(new gutil.File({
+			cwd: __dirname,
+			base: path.join(__dirname, 'tmp'),
+			path: path.join('tmp', 'index.html'),
+			contents: fs.readFileSync(path.join('tmp', 'index.html'))
+		}));
+
+		stream.end();
+	});
 });
