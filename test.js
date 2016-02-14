@@ -1,146 +1,145 @@
 'use strict';
-var assert = require('assert');
-var fs = require('fs');
-var path = require('path');
-var gutil = require('gulp-util');
-var mkdirp = require('mkdirp');
-var rimraf = require('rimraf');
-var vulcanize = require('gulp-vulcanize');
-var crisper = require('./');
+
+import test from 'ava';
+import fs from 'fs';
+import path from 'path';
+import gutil from 'gulp-util';
+import mkdirp from 'mkdirp';
+import rimraf from 'rimraf';
+import vulcanize from 'gulp-vulcanize';
+import crisper from './';
 
 function copyTestFile(src, dest) {
 	fs.writeFileSync(dest, fs.readFileSync(src, 'utf8'));
 }
 
-describe('should do for csp', function () {
-	beforeEach(function (cb) {
-		rimraf.sync('tmp');
-		mkdirp.sync('tmp/dist');
+test.beforeEach.cb(t => {
+	rimraf.sync('tmp');
+	mkdirp.sync('tmp/dist');
 
-		copyTestFile('fixture/index.html', path.join('tmp', 'index.html'));
-		copyTestFile('fixture/import.html', path.join('tmp', 'import.html'));
+	copyTestFile('fixture/index.html', path.join('tmp', 'index.html'));
+	copyTestFile('fixture/import.html', path.join('tmp', 'import.html'));
 
-		var stream = vulcanize();
+	var stream = vulcanize();
 
-		stream.on('data', function (file) {
-			fs.writeFileSync(path.join('tmp', 'vulcanize.html'), file.contents);
-		});
-
-		stream.on('end', cb);
-
-		stream.write(new gutil.File({
-			cwd: __dirname,
-			base: path.join(__dirname, 'tmp'),
-			path: path.join('tmp', 'index.html'),
-			contents: fs.readFileSync(path.join('tmp', 'index.html'))
-		}));
-
-		stream.end();
+	stream.on('data', function (file) {
+		fs.writeFileSync(path.join('tmp', 'vulcanize.html'), file.contents);
 	});
 
-	it('simple-usage', function (cb) {
-		var stream = crisper();
+	stream.on('end', t.end);
 
-		stream.on('data', function (file) {
-			var contents = file.contents.toString();
-			var rex = {
-				js: /Polymer\({/,
-				html: /<script src=\"vulcanize.js\".*><\/script>/
-			};
+	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: path.join(__dirname, 'tmp'),
+		path: path.join('tmp', 'index.html'),
+		contents: fs.readFileSync(path.join('tmp', 'index.html'))
+	}));
 
-			if (/\.html$/.test(file.path)) {
-				assert(rex.html.test(contents));
-			} else if (/\.js$/.test(file.path)) {
-				assert(rex.js.test(contents));
-			} else {
-				assert(null);
-			}
-		});
+	stream.end();
+});
 
-		stream.on('end', cb);
+test.cb('simple-usage', t => {
+	var stream = crisper();
 
-		stream.write(new gutil.File({
-			cwd: __dirname,
-			base: path.join(__dirname, 'tmp'),
-			path: path.join('tmp', 'vulcanize.html'),
-			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
-		}));
+	stream.on('data', function (file) {
+		var contents = file.contents.toString();
+		var rex = {
+			js: /Polymer\({/,
+			html: /<script src=\"vulcanize.js\".*><\/script>/
+		};
 
-		stream.end();
+		if (/\.html$/.test(file.path)) {
+			t.ok(rex.html.test(contents));
+		} else if (/\.js$/.test(file.path)) {
+			t.ok(rex.js.test(contents));
+		} else {
+			t.ok(null);
+		}
 	});
 
-	it('options test: scriptInHead', function (cb) {
-		var stream = crisper({
-			scriptInHead: Boolean
-		});
+	stream.on('end', t.end);
 
-		stream.on('data', function (file) {
-			var contents = file.contents.toString();
+	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: path.join(__dirname, 'tmp'),
+		path: path.join('tmp', 'vulcanize.html'),
+		contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+	}));
 
-			if (/\.html$/.test(file.path)) {
-				assert(/defer=/g.test(contents));
-			}
-		});
+	stream.end();
+});
 
-		stream.on('end', cb);
-
-		stream.write(new gutil.File({
-			cwd: __dirname,
-			base: path.join(__dirname, 'tmp'),
-			path: path.join('tmp', 'vulcanize.html'),
-			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
-		}));
-
-		stream.end();
+test.cb('options test: scriptInHead', t => {
+	var stream = crisper({
+		scriptInHead: Boolean
 	});
 
-	it('options test: onlySplit', function (cb) {
-		var stream = crisper({
-			onlySplit: Boolean
-		});
+	stream.on('data', function (file) {
+		var contents = file.contents.toString();
 
-		stream.on('data', function (file) {
-			var contents = file.contents.toString();
-
-			if (/\.html$/.test(file.path)) {
-				assert(!/<script/.test(contents));
-			}
-		});
-
-		stream.on('end', cb);
-
-		stream.write(new gutil.File({
-			cwd: __dirname,
-			base: path.join(__dirname, 'tmp'),
-			path: path.join('tmp', 'vulcanize.html'),
-			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
-		}));
-
-		stream.end();
+		if (/\.html$/.test(file.path)) {
+			t.ok(/defer=/g.test(contents));
+		}
 	});
 
-	it('options test: jsFileName', function (cb) {
-		var stream = crisper({
-			jsFileName: 'script/new-script.js'
-		});
+	stream.on('end', t.end);
 
-		stream.on('data', function (file) {
-			var contents = file.contents.toString();
+	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: path.join(__dirname, 'tmp'),
+		path: path.join('tmp', 'vulcanize.html'),
+		contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+	}));
 
-			if (/\.html$/.test(file.path)) {
-				assert(/script\/new-script.js/.test(contents));
-			}
-		});
+	stream.end();
+});
 
-		stream.on('end', cb);
-
-		stream.write(new gutil.File({
-			cwd: __dirname,
-			base: path.join(__dirname, 'tmp'),
-			path: path.join('tmp', 'vulcanize.html'),
-			contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
-		}));
-
-		stream.end();
+test.cb('options test: onlySplit', t => {
+	var stream = crisper({
+		onlySplit: Boolean
 	});
+
+	stream.on('data', function (file) {
+		var contents = file.contents.toString();
+
+		if (/\.html$/.test(file.path)) {
+			t.ok(!/<script/.test(contents));
+		}
+	});
+
+	stream.on('end', t.end);
+
+	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: path.join(__dirname, 'tmp'),
+		path: path.join('tmp', 'vulcanize.html'),
+		contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+	}));
+
+	stream.end();
+});
+
+test.cb('options test: jsFileName', t => {
+	var stream = crisper({
+		jsFileName: 'script/new-script.js'
+	});
+
+	stream.on('data', function (file) {
+		var contents = file.contents.toString();
+
+		if (/\.html$/.test(file.path)) {
+			t.ok(/script\/new-script.js/.test(contents));
+		}
+	});
+
+	stream.on('end', t.end);
+
+	stream.write(new gutil.File({
+		cwd: __dirname,
+		base: path.join(__dirname, 'tmp'),
+		path: path.join('tmp', 'vulcanize.html'),
+		contents: fs.readFileSync(path.join('tmp', 'vulcanize.html'))
+	}));
+
+	stream.end();
 });
