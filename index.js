@@ -1,12 +1,13 @@
 'use strict';
 var path = require('path');
-var gutil = require('gulp-util');
+var Vynil = require('vinyl');
 var through = require('through2');
 var crisper = require('crisper');
 var oassign = require('object-assign');
+var PluginError = require('plugin-error');
 
 function splitFile(file, filename, contents) {
-	return new gutil.File({
+	return new Vynil({
 		cwd: file.cwd,
 		base: file.base,
 		path: path.join(path.dirname(file.path), filename),
@@ -30,7 +31,7 @@ module.exports = function (opts) {
 		}
 
 		if (file.isStream()) {
-			cb(new gutil.PluginError('gulp-crisper', 'Streaming not supported'));
+			cb(new PluginError('gulp-crisper', 'Streaming not supported'));
 			return;
 		}
 
