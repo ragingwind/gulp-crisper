@@ -3,7 +3,7 @@
 import test from 'ava';
 import fs from 'fs';
 import path from 'path';
-import gutil from 'gulp-util';
+import Vinyl from 'vinyl';
 import mkdirp from 'mkdirp';
 import rimraf from 'rimraf';
 import vulcanize from 'gulp-vulcanize';
@@ -28,7 +28,7 @@ test.beforeEach.cb(t => {
 
 	stream.on('end', t.end);
 
-	stream.write(new gutil.File({
+	stream.write(new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'tmp'),
 		path: path.join('tmp', 'index.html'),
@@ -59,7 +59,7 @@ test.cb('simple-usage', t => {
 
 	stream.on('end', t.end);
 
-	stream.write(new gutil.File({
+	stream.write(new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'tmp'),
 		path: path.join('tmp', 'vulcanize.html'),
@@ -84,7 +84,7 @@ test.cb('options test: scriptInHead', t => {
 
 	stream.on('end', t.end);
 
-	stream.write(new gutil.File({
+	stream.write(new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'tmp'),
 		path: path.join('tmp', 'vulcanize.html'),
@@ -109,7 +109,7 @@ test.cb('options test: onlySplit', t => {
 
 	stream.on('end', t.end);
 
-	stream.write(new gutil.File({
+	stream.write(new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'tmp'),
 		path: path.join('tmp', 'vulcanize.html'),
@@ -134,7 +134,7 @@ test.cb('options test: jsFileName', t => {
 
 	stream.on('end', t.end);
 
-	stream.write(new gutil.File({
+	stream.write(new Vinyl({
 		cwd: __dirname,
 		base: path.join(__dirname, 'tmp'),
 		path: path.join('tmp', 'vulcanize.html'),
